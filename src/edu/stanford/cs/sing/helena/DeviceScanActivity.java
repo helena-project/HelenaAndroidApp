@@ -243,6 +243,7 @@ public class DeviceScanActivity extends ListActivity {
 
             return view;
         }
+    }
 
     // Device scan callback.
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
@@ -263,5 +264,5 @@ public class DeviceScanActivity extends ListActivity {
     static class ViewHolder {
         TextView deviceName;
         TextView deviceAddress;
+    	}
     }
-}

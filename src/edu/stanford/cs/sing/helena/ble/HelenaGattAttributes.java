@@ -5,8 +5,8 @@ import java.util.HashMap;
 public class HelenaGattAttributes {
 
 	private static HashMap<String, String> attributes = new HashMap<String, String>();
-	public static final String UUID_LISTED_DEVICE = "00009430-0000-1000-8000-00805f9b34fb";
-	public static final String HELENA_SERVICE = "00009431-0000-1000-8000-00805f9b34fb";
+	public static final String UUID_LISTED_DEVICE = "00002003-0000-1000-8000-00805f9b34fb";
+	public static final String HELENA_SERVICE = "00001978-0000-1000-8000-00805f9b34fb";
     
 
 

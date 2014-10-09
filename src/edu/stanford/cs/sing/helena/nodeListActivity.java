@@ -1,5 +1,8 @@
 package edu.stanford.cs.sing.helena;
 
+import com.squareup.otto.Subscribe;
+
+import edu.stanford.cs.sing.common.logger.Log;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
@@ -36,7 +39,7 @@ public class nodeListActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_node_list);
-
+        BusProvider.getInstance().register(this);
         if (findViewById(R.id.node_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-large and
@@ -53,6 +56,7 @@ public class nodeListActivity extends Activity
 
         // TODO: If exposing deep links into your app, handle intents here.
     }
+
 
     /**
      * Callback method from {@link nodeListFragment.Callbacks}

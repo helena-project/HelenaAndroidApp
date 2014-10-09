@@ -6,8 +6,6 @@ package edu.stanford.cs.sing.helena.ble;
 import java.util.List;
 import java.util.UUID;
 
-import edu.stanford.cs.sing.common.logger.Log;
-
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -22,6 +20,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import edu.stanford.cs.sing.common.logger.Log;
+import edu.stanford.cs.sing.helena.BusProvider;
+import edu.stanford.cs.sing.helena.NodeListUpdatedEvent;
 
 /**
  * @author lauril
@@ -36,6 +37,7 @@ public class BluetoothLeService extends Service {
 	private BluetoothGatt mBluetoothGatt;
 	private int mConnectionState = STATE_DISCONNECTED;
 
+	
 	private static final int STATE_DISCONNECTED = 0;
 	private static final int STATE_CONNECTING = 1;
 	private static final int STATE_CONNECTED = 2;
@@ -50,11 +52,15 @@ public class BluetoothLeService extends Service {
 			"edu.stanford.cs.sing.helena.ble.ACTION_DATA_AVAILABLE";
 	public final static String EXTRA_DATA =
 			"edu.stanford.cs.sing.helena.ble.EXTRA_DATA";
+	public final static String BYTE_DATA =
+			"edu.stanford.cs.sing.helena.ble.BYTE_DATA";
 
 	public final static UUID UUID_LISTED_DEVICE =
 			UUID.fromString(HelenaGattAttributes.UUID_LISTED_DEVICE);
 	public final static UUID UUID_HELENA_SERVICE =
 			UUID.fromString(HelenaGattAttributes.HELENA_SERVICE);
+	
+	
 
 	// Implements callback methods for GATT events that the app cares about.  For example,
 	// connection change and services discovered.
@@ -100,6 +106,7 @@ public class BluetoothLeService extends Service {
 		@Override
 		public void onCharacteristicChanged(BluetoothGatt gatt,
 				BluetoothGattCharacteristic characteristic) {
+			
 			broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
 		}
 	};
@@ -113,18 +120,20 @@ public class BluetoothLeService extends Service {
 			final BluetoothGattCharacteristic characteristic) {
 		final Intent intent = new Intent(action);
 
-		// This is special handling for the Heart Rate Measurement profile.  Data parsing is
-		// carried out as per profile specifications:
-		// http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml
-		if (UUID_HELENA_SERVICE.equals(characteristic.getUuid())) {
-
+		if (UUID_LISTED_DEVICE.equals(characteristic.getUuid())) {
+			Log.d("RX-UPDATE", "Got data");
 			///TODO: deal with data here
 			final byte[] data = characteristic.getValue();
 			if (data != null && data.length > 0) {
+				
 				final StringBuilder stringBuilder = new StringBuilder(data.length);
-				Log.d(TAG, String.format("Received data"));
 				for(byte byteChar : data)
 					stringBuilder.append(String.format("%02X ", byteChar));
+				
+				Log.d("RX-UPDATE", "Got data: " + stringBuilder.toString());
+				intent.putExtra(EXTRA_DATA,  stringBuilder.toString());
+				intent.putExtra(BYTE_DATA, data);
+				
 			}
 
 		} else {
@@ -148,6 +157,7 @@ public class BluetoothLeService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		BusProvider.getInstance().register(this);
 		Log.d(TAG, "onBind");
 		return mBinder;
 	}
@@ -283,8 +293,16 @@ public class BluetoothLeService extends Service {
 			Log.w(TAG, "BluetoothAdapter not initialized");
 			return;
 		}
-      mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-      mBluetoothGatt.writeCharacteristic(characteristic);
+		mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+		Log.d(TAG, "setCharacteristicNotification");
+		if(UUID_LISTED_DEVICE.equals(characteristic.getUuid())){
+			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
+                    UUID.fromString(HelenaGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(descriptor);
+		}
+
+     
 
 	}
 

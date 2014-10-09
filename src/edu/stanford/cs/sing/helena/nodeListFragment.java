@@ -1,6 +1,7 @@
 package edu.stanford.cs.sing.helena;
 
-import edu.stanford.cs.sing.helena.nodes.Node;
+
+import edu.stanford.cs.sing.helena.nodes.Firestorm;
 import edu.stanford.cs.sing.helena.nodes.NodeList;
 import android.app.Activity;
 import android.os.Bundle;
@@ -21,7 +22,8 @@ import android.widget.ListView;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class nodeListFragment extends ListFragment {
+public class nodeListFragment extends ListFragment
+	implements LoaderManager.LoaderCallbacks<ArrayList<Firestorm>>{
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -74,7 +76,7 @@ public class nodeListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<Node>(
+        setListAdapter(new ArrayAdapter<Firestorm>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,

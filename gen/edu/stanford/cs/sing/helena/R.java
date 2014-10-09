@@ -51,9 +51,10 @@ public final class R {
         public static final int activity_node_twopane=0x7f030003;
         public static final int device_control_activity=0x7f030004;
         public static final int device_search=0x7f030005;
-        public static final int fragment_node_detail=0x7f030006;
-        public static final int list_devices=0x7f030007;
-        public static final int listitem_device=0x7f030008;
+        public static final int firestorm_list=0x7f030006;
+        public static final int fragment_node_detail=0x7f030007;
+        public static final int list_devices=0x7f030008;
+        public static final int listitem_device=0x7f030009;
     }
     public static final class menu {
         public static final int gatt_services=0x7f060000;

@@ -1,4 +1,4 @@
-package edu.stanford.cs.sing.helena;
+package edu.stanford.cs.sing.helena.nodes;
 import java.sql.Timestamp;
 
 import edu.stanford.cs.sing.common.helper.ByteWork;

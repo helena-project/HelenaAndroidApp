@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- http://www.color-hex.com/color-palette/200
+ -->
+<resources>
+<color name="redbrown">#885159</color>
+<color name="purpule">#645188</color>
+<color name="brown">#886451</color>
+<color name="green">#528881</color>
+<color name="black">#000000	</color>
+<color name="grey3">#7b7d7b	</color>
+<color name="grey2">#969696</color>
+<color name="grey1">#bfbfbf	</color>
+<color name="white">#ffffff</color>
+<!-- http://www.color-hex.com/color-palette/1294 -->
+<color name="blue4">#011f4b</color>
+<color name="blue3">#03396c</color>
+<color name="blue2">#005b96</color>
+<color name="blue1">#6497b1</color>
+<color name="blue0">#b3cde0</color>
+</resources>

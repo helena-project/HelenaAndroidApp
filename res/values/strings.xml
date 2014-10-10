@@ -5,7 +5,7 @@
     <string name="title_node_detail">Node Detail</string>
  	<string name="ble_not_supported">BLE is not supported</string>
     <string name="label_data">Data:</string>
-    <string name="label_device_address">Device address:</string>
+    <string name="label_device_address">Gateway address:</string>
     <string name="label_state">State:</string>
     <string name="no_data">No data</string>
     <string name="connected">Connected</string>
@@ -22,6 +22,8 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+    <string name="addr">Addr:</string>
+    <string name="number">N:</string>
 
 
 </resources>

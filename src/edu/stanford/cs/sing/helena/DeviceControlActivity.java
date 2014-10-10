@@ -36,8 +36,11 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import edu.stanford.cs.sing.common.helper.ByteWork;
@@ -131,7 +134,35 @@ public class DeviceControlActivity extends Activity
 		}
 	};
 
-	private boolean mTwoPane;
+	 private final ListView.OnChildClickListener servicesListClickListner =
+	            new  ListView.OnChildClickListener() {
+	                @Override
+	                public boolean onChildClick(ListView parent, View v, int groupPosition,
+	                                            int childPosition, long id) {
+	                    if (mGattCharacteristics != null) {
+	                        final BluetoothGattCharacteristic characteristic =
+	                                mGattCharacteristics.get(groupPosition).get(childPosition);
+	                        final int charaProp = characteristic.getProperties();
+	                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+	                            // If there is an active notification on a characteristic, clear
+	                            // it first so it doesn't update the data field on the user interface.
+	                            if (mNotifyCharacteristic != null) {
+	                                mBluetoothLeService.setCharacteristicNotification(
+	                                        mNotifyCharacteristic, false);
+	                                mNotifyCharacteristic = null;
+	                            }
+	                            mBluetoothLeService.readCharacteristic(characteristic);
+	                        }
+	                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+	                            mNotifyCharacteristic = characteristic;
+	                            mBluetoothLeService.setCharacteristicNotification(
+	                                    characteristic, true);
+	                        }
+	                        return true;
+	                    }
+	                    return false;
+	                }
+	    };
 
 
 	private void dealWithData(byte[] data){
@@ -141,85 +172,32 @@ public class DeviceControlActivity extends Activity
 		for(byte byteChar : device)
 			str.append(String.format("%02X ", byteChar));
 		Firestorm mFire = NodeList.addItem(str.toString(), observed);
-		BusProvider.getInstance().post(new NodeListUpdatedEvent());
 
 		Log.d(TAG, "Deal with data ");
 	}
 
-	// If a given GATT characteristic is selected, check for supported features.  This sample
-	// demonstrates 'Read' and 'Notify' features.  See
-	// http://d.android.com/reference/android/bluetooth/BluetoothGatt.html for the complete
-	// list of supported characteristic features.
-//	private final ExpandableListView.OnChildClickListener servicesListClickListner =
-//			new ExpandableListView.OnChildClickListener() {
-//		@Override
-//		public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-//				int childPosition, long id) {
-//			if (mGattCharacteristics != null) {
-//
-//				final BluetoothGattCharacteristic characteristic =
-//						mGattCharacteristics.get(groupPosition).get(childPosition);
-//				final int charaProp = characteristic.getProperties();
-//				Log.d(TAG, "onChildClick: " + String.valueOf(charaProp));
-//				if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
-//					// If there is an active notification on a characteristic, clear
-//					// it first so it doesn't update the data field on the user interface.
-//					if (mNotifyCharacteristic != null) {
-//						mBluetoothLeService.setCharacteristicNotification(
-//								mNotifyCharacteristic, false);
-//						mNotifyCharacteristic = null;
-//					}
-//					mBluetoothLeService.readCharacteristic(characteristic);
-//				}
-//				if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-//					mNotifyCharacteristic = characteristic;
-//					mBluetoothLeService.setCharacteristicNotification(
-//							characteristic, true);
-//				}
-//				return true;
-//			}
-//			return false;
-//		}
-//	};
 
 	private void clearUI() {
-		mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-		//mDataField.setText(R.string.no_data);
+		
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		 BusProvider.getInstance().register(this);
-	      setContentView(R.layout.activity_node_list);
+	      setContentView(R.layout.device_control_activity);
 
-	        if (findViewById(R.id.node_detail_container) != null) {
-	            // The detail container view will be present only in the
-	            // large-screen layouts (res/values-large and
-	            // res/values-sw600dp). If this view is present, then the
-	            // activity should be in two-pane mode.
-	            mTwoPane = true;
-
-	            // In two-pane mode, list items should be given the
-	            // 'activated' state when touched.
-	            ((nodeListFragment) getFragmentManager()
-	                    .findFragmentById(R.id.node_list))
-	                    .setActivateOnItemClick(true);
-	        }
 		//
 		final Intent intent = getIntent();
 		mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
 		mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-		//
-		//        // Sets up UI references.
-//		((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
-//		mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
-//		//mGattServicesList.setOnChildClickListener(servicesListClickListner);
-//		mConnectionState = (TextView) findViewById(R.id.connection_state);
-//		mDataField = (TextView) findViewById(R.id.data_value);
 		Log.d(TAG, "Connected to " + mDeviceAddress );
 		getActionBar().setTitle(mDeviceName);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+		((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
+        mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
+        mGattServicesList.setOnChildClickListener(servicesListClickListner);
+        mConnectionState = (TextView) findViewById(R.id.connection_state);
 		Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
 		bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 		Log.d(TAG, "onCreate bindService");
@@ -254,7 +232,7 @@ public class DeviceControlActivity extends Activity
 	@Override
 	protected void onResume() {
 		super.onResume();
-		BusProvider.getInstance().register(this);
+	
 		registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
 		if (mBluetoothLeService != null) {
 			final boolean result = mBluetoothLeService.connect(mDeviceAddress);
@@ -382,19 +360,19 @@ public class DeviceControlActivity extends Activity
 				Log.d(TAG, "Skipping other services");
 			}
 		}
+		ListAdapter gattServiceAdapter = new SimpleExpandableListAdapter(
+                this,
+                gattServiceData,
+                android.R.layout.simple_expandable_list_item_2,
+                new String[] {LIST_NAME, LIST_UUID},
+                new int[] { android.R.id.text1, android.R.id.text2 },
+                gattCharacteristicData,
+                android.R.layout.simple_expandable_list_item_2,
+                new String[] {LIST_NAME, LIST_UUID},
+                new int[] { android.R.id.text1, android.R.id.text2 }
+        );
+        mGattServicesList.setAdapter(gattServiceAdapter);
 
-//		SimpleExpandableListAdapter gattServiceAdapter = new SimpleExpandableListAdapter(
-//				this,
-//				gattServiceData,
-//				android.R.layout.simple_expandable_list_item_2,
-//				new String[] {LIST_NAME, LIST_UUID},
-//				new int[] { android.R.id.text1, android.R.id.text2 },
-//				gattCharacteristicData,
-//				android.R.layout.simple_expandable_list_item_2,
-//				new String[] {LIST_NAME, LIST_UUID},
-//				new int[] { android.R.id.text1, android.R.id.text2 }
-//				);
-//		mGattServicesList.setAdapter(gattServiceAdapter);
 	}
 
 	private static IntentFilter makeGattUpdateIntentFilter() {

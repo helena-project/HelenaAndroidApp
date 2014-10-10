@@ -22,8 +22,7 @@ import android.widget.ListView;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class nodeListFragment extends ListFragment
-	implements LoaderManager.LoaderCallbacks<ArrayList<Firestorm>>{
+public class nodeListFragment extends ListFragment {
 
     /**
      * The serialization (saved instance state) Bundle key representing the

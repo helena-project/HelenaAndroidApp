@@ -30,6 +30,7 @@
     <string name="observed_device">Observed device</string>
     
     <string name="observation_time">Observation time</string>
+    <string name="empty"></string>
 
 
 </resources>

@@ -16,11 +16,7 @@
 
 package edu.stanford.cs.sing.helena;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import com.squareup.otto.Bus;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -33,7 +29,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,7 +43,6 @@ import edu.stanford.cs.sing.helena.ble.HelenaGattAttributes;
 import edu.stanford.cs.sing.helena.nodes.FireAdapter;
 import edu.stanford.cs.sing.helena.nodes.FireArray;
 import edu.stanford.cs.sing.helena.nodes.ObservAdapter;
-import edu.stanford.cs.sing.helena.nodes.ObserverActivity;
 
 
 
@@ -80,7 +74,7 @@ public class DeviceControlActivity extends Activity {
 	public FireArray mFirestormArray;
 	private FireAdapter mFireAdapter;
 	private ObservAdapter mObserverAdapter;
-
+	private boolean mFireLitDisplay;
 
 	// Code to manage Service lifecycle.
 	private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -133,6 +127,8 @@ public class DeviceControlActivity extends Activity {
 		}
 	};
 
+	private OnItemClickListener mFireListOnClickListner;
+
 
 
 	private void dealWithData(byte[] data){
@@ -154,51 +150,76 @@ public class DeviceControlActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mFireLitDisplay = false;
 		mFirestormArray = new FireArray();
+		mFireListOnClickListner= new FireListOnClickListner();
 	    setContentView(R.layout.device_control_activity);
 
 		//
 		final Intent intent = getIntent();
 		mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
 		mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-		Log.d(TAG, "Connected to " + mDeviceAddress );
+		Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+		bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 		getActionBar().setTitle(mDeviceName);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
 
         //mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
-		Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-		bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-		addList();
+        // Create the adapter to convert the array to views
+        mFireAdapter = new FireAdapter(this, mFirestormArray);
+		addFireList();
 
 		Log.d(TAG, "onCreate bindService");
 	}
 
-	private void addList(){
-        // Create the adapter to convert the array to views
-        mFireAdapter = new FireAdapter(this, mFirestormArray);
-        
-        // Attach the adapter to a ListView
-        ListView listView = (ListView) findViewById(R.id.fire_list);
-        listView.setAdapter(mFireAdapter);
-        listView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-            	Log.d(TAG, "onClick " + position);
-            	mObserverAdapter = new ObservAdapter(
-            			view.getContext(), mFirestormArray.get(position).getObservationList());
-            	ListView listView = (ListView) findViewById(R.id.fire_list);
-                listView.setAdapter(mObserverAdapter);
-            	//Intent i = new Intent(DeviceControlActivity.this, ObserverActivity.class);
-//               //If you wanna send any data to nextActicity.class you can use
-//               i.putParcelableArrayListExtra("firestorm",
-//            		   (ArrayList<? extends Parcelable>) mFirestorsm.mArrayList.get(position).getObservationList());
-//
-           // startActivity(i);
-            }
-          });
-    
+	public void onBackPressed(){
+		Log.d(TAG,"OnBackPress");
+		if(mFireLitDisplay){
+			super.onBackPressed();
+		} else { 
+			addFireList();
+		}
+	}
+	
+	private void addDetailList(AdapterView<?> parent, View view, int position, long id){
+		mFireLitDisplay = false;
+		((TextView) findViewById(R.id.header_columt_1)).setText(R.string.addr);
+		((TextView) findViewById(R.id.header_columt_2)).setText(R.string.label_last_seen);
+		((TextView) findViewById(R.id.header_columt_3)).setText(R.string.empty);
+    	mObserverAdapter = new ObservAdapter(
+    			view.getContext(), mFirestormArray.get(position).getObservationList());
+    	ListView listView = (ListView) findViewById(R.id.fire_list);
+        listView.setAdapter(mObserverAdapter);
 
+	}
+	
+	class FireListOnClickListner implements OnItemClickListener{
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			addDetailList( parent,  view,  position, id);
+        	Log.d(TAG, "onClick " + position);
+
+
+			
+		}
+		
+	}
+	private void addFireList(){
+		if(!mFireLitDisplay){
+			Log.d(TAG, "Connected to " + mDeviceAddress );
+			mFireLitDisplay = true;
+			((TextView) findViewById(R.id.header_columt_1)).setText(R.string.addr);
+			((TextView) findViewById(R.id.header_columt_2)).setText(R.string.number);
+			((TextView) findViewById(R.id.header_columt_3)).setText(R.string.label_last_seen);
+	        // Attach the adapter to a ListView
+	        ListView listView = (ListView) findViewById(R.id.fire_list);
+	        listView.setAdapter(mFireAdapter);
+	        listView.setOnItemClickListener(mFireListOnClickListner);
+			}
 	}
 
 	@Override

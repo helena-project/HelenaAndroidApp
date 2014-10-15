@@ -1,17 +1,13 @@
 package edu.stanford.cs.sing.helena.nodes;
 
 
-import java.util.ArrayList;
-
-import edu.stanford.cs.sing.helena.R;
 import android.content.Context;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import edu.stanford.cs.sing.helena.R;
 
 public class ObservAdapter extends ArrayAdapter<Observation> {
 
@@ -50,7 +46,7 @@ public class ObservAdapter extends ArrayAdapter<Observation> {
        // Populate the data into the template view using the data object
        viewHolder.address.setText(""+mobservation.observed);
        //viewHolder.number.setText(""+mFire.numberOfObservation());
-       viewHolder.lastUpdated.setText("" + mobservation.timestamp);
+       viewHolder.lastUpdated.setText("" + mobservation.mSeenTime);
        // Return the completed view to render on screen
        return convertView;
    }

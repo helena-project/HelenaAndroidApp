@@ -1,8 +1,6 @@
 package edu.stanford.cs.sing.helena.nodes;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-
 
 import android.support.v4.util.ArrayMap;
 import android.text.format.Time;
@@ -32,6 +30,7 @@ public class Firestorm {
 		today.setToNow();
 		return today.format("%k:%M:%S");
 	}
+	
 	public void addObservation(Observation observed) {
 		mObservedDevices.put(new Timestamp(System.currentTimeMillis()), observed);
 		mObservationArray.add(observed);

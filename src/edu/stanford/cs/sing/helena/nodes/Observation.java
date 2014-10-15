@@ -1,11 +1,15 @@
 package edu.stanford.cs.sing.helena.nodes;
 import java.sql.Timestamp;
 
+import android.text.format.Time;
+
 import edu.stanford.cs.sing.common.helper.ByteWork;
+import edu.stanford.cs.sing.common.helper.TimeWorks;
 
 public class Observation {
 	public String observed;
 	public Timestamp timestamp;
+	public String mSeenTime;
 	
 	public Observation(byte[] data){
 		this.observed = makeObserved(data);
@@ -13,10 +17,11 @@ public class Observation {
 				(long)ByteWork.convertFourUnsignedBytesToLong(
 						ByteWork.getBytes(data,4,7))
 						);
-				
+		this.mSeenTime = TimeWorks.timestampToString(timestamp, "%k:%M:%S");
 	}
 	
-	
+
+			
 	public String getObserved(){
 		return observed;
 	}

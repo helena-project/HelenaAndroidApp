@@ -16,6 +16,8 @@
 
 package edu.stanford.cs.sing.helena.ble;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
@@ -35,15 +37,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-
 import edu.stanford.cs.sing.helena.DeviceControlActivity;
 import edu.stanford.cs.sing.helena.R;
-import edu.stanford.cs.sing.helena.R.id;
-import edu.stanford.cs.sing.helena.R.layout;
-import edu.stanford.cs.sing.helena.R.menu;
-import edu.stanford.cs.sing.helena.R.string;
 
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.

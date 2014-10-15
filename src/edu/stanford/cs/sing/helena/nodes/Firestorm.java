@@ -1,6 +1,7 @@
 package edu.stanford.cs.sing.helena.nodes;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 
 import android.support.v4.util.ArrayMap;
@@ -11,12 +12,14 @@ public class Firestorm {
 
 
 	//the Timestamp is additional, local when the data was created
-	private ArrayMap<Timestamp, Observation> mObservedDevices; 
+	public ArrayMap<Timestamp, Observation> mObservedDevices; 
 	public String id;
 	public String lastUpdated;
+	public ObservationArray mObservationArray;
 	
 	public Firestorm (String id){
 		this.mObservedDevices = new ArrayMap<Timestamp, Observation>();
+		mObservationArray = new ObservationArray();
 		this.id = id;
 		this.lastUpdated = getTimeNow();	
 		}
@@ -31,6 +34,7 @@ public class Firestorm {
 	}
 	public void addObservation(Observation observed) {
 		mObservedDevices.put(new Timestamp(System.currentTimeMillis()), observed);
+		mObservationArray.add(observed);
 		this.lastUpdated = getTimeNow();	
 	}
 	public void addObservation(byte[] observed){
@@ -47,6 +51,10 @@ public class Firestorm {
 	
 	public String toString(){
 		return this.id;
+	}
+	
+	public ObservationArray getObservationList(){
+		return this.mObservationArray;
 	}
 	
 }

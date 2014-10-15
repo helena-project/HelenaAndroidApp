@@ -1,13 +1,18 @@
 package edu.stanford.cs.sing.helena.nodes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
 import android.support.v4.util.ArrayMap;
-import android.text.format.Time;
 
-public class FireArray {
 
+public class FireArray implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6784177937875749632L;
 	public  ArrayList<Firestorm> mArrayList;
 	private ArrayMap<String, Firestorm> mFireMap;
 	private FireAdapter mFireAdapter;
@@ -20,16 +25,14 @@ public class FireArray {
 	public void addAddapter(FireAdapter fa){
 		this.mFireAdapter = fa;
 	}
-	private void updateAdapter(Firestorm f){
-		mFireAdapter.add(f);
-	}
+	
+
 
 	public void addDeviceData(String key, byte[] data){
 		
 		
 		if(mFireMap.containsKey(key)){
 			mFireMap.get(key).addObservation(data);
-			
 
 		} else {
 			Firestorm fire = new Firestorm(key);
@@ -40,4 +43,9 @@ public class FireArray {
 			}
 		mFireAdapter.notifyDataSetChanged();
 	}
+	
+	public Firestorm get(int possition){
+		return mArrayList.get(possition);
+	}
+	
 }

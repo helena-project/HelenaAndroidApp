@@ -22,8 +22,14 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
-    <string name="addr">Addr:</string>
-    <string name="number">N:</string>
+    <string name="addr">MAC</string>
+    <string name="number">Count</string>
+    
+    <string name="label_last_seen">Last Seen</string>
+    
+    <string name="observed_device">Observed device</string>
+    
+    <string name="observation_time">Observation time</string>
 
 
 </resources>

@@ -33,6 +33,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +47,8 @@ import edu.stanford.cs.sing.helena.ble.BluetoothLeService;
 import edu.stanford.cs.sing.helena.ble.HelenaGattAttributes;
 import edu.stanford.cs.sing.helena.nodes.FireAdapter;
 import edu.stanford.cs.sing.helena.nodes.FireArray;
+import edu.stanford.cs.sing.helena.nodes.ObservAdapter;
+import edu.stanford.cs.sing.helena.nodes.ObserverActivity;
 
 
 
@@ -73,12 +76,10 @@ public class DeviceControlActivity extends Activity {
 	private BluetoothGattCharacteristic mNotifyCharacteristic;
 	private BluetoothGattService mHelenaService;
 
-	private final String LIST_NAME = "NAME";
-	private final String LIST_UUID = "UUID";
-	
-	public static Bus mMessageBus;
-	private FireArray mFirestorsm;
-	private FireAdapter mAdapter;
+
+	public FireArray mFirestormArray;
+	private FireAdapter mFireAdapter;
+	private ObservAdapter mObserverAdapter;
 
 
 	// Code to manage Service lifecycle.
@@ -134,8 +135,6 @@ public class DeviceControlActivity extends Activity {
 
 
 
-
-
 	private void dealWithData(byte[] data){
 		byte[] device = ByteWork.getBytes(data, 0, 5);
 		byte[] observed = ByteWork.getBytes(data, 6, 15);
@@ -143,7 +142,7 @@ public class DeviceControlActivity extends Activity {
 		for(byte byteChar : device)
 			str.append(String.format("%02X ", byteChar));
 		
-		mFirestorsm.addDeviceData(str.toString(),observed);
+		mFirestormArray.addDeviceData(str.toString(),observed);
 		Log.d(TAG, "Deal with data ");
 	}
 
@@ -155,7 +154,7 @@ public class DeviceControlActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mFirestorsm = new FireArray();
+		mFirestormArray = new FireArray();
 	    setContentView(R.layout.device_control_activity);
 
 		//
@@ -178,18 +177,24 @@ public class DeviceControlActivity extends Activity {
 
 	private void addList(){
         // Create the adapter to convert the array to views
-        mAdapter = new FireAdapter(this, mFirestorsm);
+        mFireAdapter = new FireAdapter(this, mFirestormArray);
+        
         // Attach the adapter to a ListView
         ListView listView = (ListView) findViewById(R.id.fire_list);
-        listView.setAdapter(mAdapter);
+        listView.setAdapter(mFireAdapter);
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-            	Log.d(TAG, "onClick" + position);
-//                Intent i = new Intent(More.this, NextActvity.class);
+            	Log.d(TAG, "onClick " + position);
+            	mObserverAdapter = new ObservAdapter(
+            			view.getContext(), mFirestormArray.get(position).getObservationList());
+            	ListView listView = (ListView) findViewById(R.id.fire_list);
+                listView.setAdapter(mObserverAdapter);
+            	//Intent i = new Intent(DeviceControlActivity.this, ObserverActivity.class);
 //               //If you wanna send any data to nextActicity.class you can use
-//                 i.putExtra(String key, value.get(position));
+//               i.putParcelableArrayListExtra("firestorm",
+//            		   (ArrayList<? extends Parcelable>) mFirestorsm.mArrayList.get(position).getObservationList());
 //
-//            startActivity(i);
+           // startActivity(i);
             }
           });
     
@@ -262,24 +267,41 @@ public class DeviceControlActivity extends Activity {
 		});
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  // good practice to save
+		//TODO save the instance
+		Log.d(TAG, "onSaveInstanceState");
 
-
+	  super.onSaveInstanceState(savedInstanceState);  
+	}  
+	
+	    @Override  
+	public void onRestoreInstanceState(Bundle savedInstanceState) {  
+	  super.onRestoreInstanceState(savedInstanceState);  
+	  Log.d(TAG, "onRestoreInstanceState");
+	  // Restore UI state from the savedInstanceState.  
+	  //TODO: implement restorations of the instance
+	    }
 	private void checkServices(List<BluetoothGattService> gattServices) {
 		if (gattServices == null) return;
 		String uuid;
 		// Loops through available GATT Services.
 		for (BluetoothGattService gattService : gattServices) {
 			 uuid = gattService.getUuid().toString();
+			 //only interested in helena service
 			if(uuid.equals(HelenaGattAttributes.HELENA_SERVICE)){
 				mHelenaService = gattService;
 				List<BluetoothGattCharacteristic> gattCharacteristics =
 						gattService.getCharacteristics();
 				// Loops through available Characteristics.
 				for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+					//only interested in this characteristic
 					if(gattCharacteristic.getUuid().toString().equals(HelenaGattAttributes.UUID_LISTED_DEVICE)){
 						mNotifyCharacteristic = gattCharacteristic;
 						final int charaProp = gattCharacteristic.getProperties();
 							if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+								//Initiate notifications
 								mNotifyCharacteristic = gattCharacteristic;
 								mBluetoothLeService.setCharacteristicNotification(
 										gattCharacteristic, true);
@@ -292,19 +314,6 @@ public class DeviceControlActivity extends Activity {
 				Log.d(TAG, "Skipping other services");
 			}
 		}
-//		ListAdapter gattServiceAdapter = new SimpleExpandableListAdapter(
-//                this,
-//                gattServiceData,
-//                android.R.layout.simple_expandable_list_item_2,
-//                new String[] {LIST_NAME, LIST_UUID},
-//                new int[] { android.R.id.text1, android.R.id.text2 },
-//                gattCharacteristicData,
-//                android.R.layout.simple_expandable_list_item_2,
-//                new String[] {LIST_NAME, LIST_UUID},
-//                new int[] { android.R.id.text1, android.R.id.text2 }
-//        );
-//        mGattServicesList.setAdapter(gattServiceAdapter);
-
 	}
 
 	private static IntentFilter makeGattUpdateIntentFilter() {

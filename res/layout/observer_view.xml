@@ -2,11 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey1"
-    android:orientation="vertical"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp" >
-
+    android:orientation="vertical" >
+    
     <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
@@ -30,7 +27,8 @@
             android:textSize="18sp" />
 
     </LinearLayout>
-    <LinearLayout android:orientation="horizontal"
+    
+        <LinearLayout android:orientation="horizontal"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:layout_margin="2dp">
@@ -38,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_state"
+            android:text="@string/label_last_seen"
             android:textColor="@color/blue4"
             android:textSize="18sp" />
 
@@ -46,16 +44,16 @@
                android:layout_height="wrap_content"/>
 
         <TextView
-            android:id="@+id/connection_state"
+            android:id="@+id/last_seen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/disconnected"
             android:textColor="@color/redbrown"
             android:textSize="18sp" />
 
     </LinearLayout>
 
-    <LinearLayout
+     
+       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
@@ -69,7 +67,7 @@
  <Space android:layout_width="120dp"
        android:layout_height="wrap_content"/>
 
-   <TextView
+<!--    <TextView
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:text="@string/number"
@@ -77,7 +75,7 @@
        android:textSize="18sp" />
    
  <Space android:layout_width="20dp"
-       android:layout_height="wrap_content"/>
+       android:layout_height="wrap_content"/> -->
 
  <TextView
      android:layout_width="wrap_content"
@@ -85,26 +83,15 @@
 android:text="@string/label_last_seen"
      android:textColor="@color/blue3"
      android:textSize="18sp" />
-</LinearLayout>
-
+</LinearLayout>     
     
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_margin="0dp"
-        android:orientation="horizontal" >
-
-        <Space android:layout_width="5dp"
-               android:layout_height="wrap_content"/>
-    </LinearLayout>
-<View style="@style/Divider"/>
+       
+ <View style="@style/Divider"/>       
     <ListView
-        android:id="@+id/fire_list"
+        android:id="@+id/observation_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:drawSelectorOnTop="true" >
+ >
 
     </ListView>
-
 </LinearLayout>

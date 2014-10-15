@@ -4,13 +4,13 @@
  android:layout_height="match_parent" >
 
     <TextView
-        android:id="@+id/fire_adress"
+        android:id="@+id/observed_addr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/brown"
         android:textSize="18sp" />
 
- <Space android:layout_width="30dp"
+<!--  <Space android:layout_width="30dp"
        android:layout_height="wrap_content"/>
 
    <TextView
@@ -19,12 +19,12 @@
        android:layout_height="wrap_content"
        android:text="@string/number"
        android:textColor="@color/green"
-       android:textSize="18sp" />
- <Space android:layout_width="40dp"
+       android:textSize="18sp" /> -->
+ <Space android:layout_width="70dp"
        android:layout_height="wrap_content"/>
 
  <TextView
-     android:id="@+id/last_updated"
+     android:id="@+id/observ_time"
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
 android:textColor="@color/blue3"

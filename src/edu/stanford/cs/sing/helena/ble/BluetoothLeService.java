@@ -22,7 +22,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import edu.stanford.cs.sing.common.logger.Log;
 import edu.stanford.cs.sing.helena.BusProvider;
-import edu.stanford.cs.sing.helena.NodeListUpdatedEvent;
 
 /**
  * @author lauril

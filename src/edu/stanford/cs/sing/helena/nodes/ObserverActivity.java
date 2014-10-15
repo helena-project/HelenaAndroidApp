@@ -3,15 +3,8 @@
  */
 package edu.stanford.cs.sing.helena.nodes;
 
-import java.util.ArrayList;
-
-import edu.stanford.cs.sing.helena.DeviceControlActivity;
-import edu.stanford.cs.sing.helena.R;
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
-import android.widget.ListView;
 
 /**
  * @author lauril

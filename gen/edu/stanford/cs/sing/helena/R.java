@@ -29,8 +29,9 @@ public final class R {
         public static final int white=0x7f040008;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int scan=0x7f020001;
+        public static final int dialog_background=0x7f020000;
+        public static final int ic_launcher=0x7f020001;
+        public static final int scan=0x7f020002;
     }
     public static final class id {
         public static final int connection_state=0x7f080001;
@@ -44,14 +45,18 @@ public final class R {
         public static final int header_columt_3=0x7f080004;
         public static final int last_seen=0x7f08000c;
         public static final int last_updated=0x7f080008;
-        public static final int menu_connect=0x7f08000f;
-        public static final int menu_disconnect=0x7f080010;
-        public static final int menu_refresh=0x7f08000e;
-        public static final int menu_scan=0x7f080011;
-        public static final int menu_stop=0x7f080012;
+        public static final int menu_connect=0x7f080013;
+        public static final int menu_disconnect=0x7f080014;
+        public static final int menu_refresh=0x7f080012;
+        public static final int menu_scan=0x7f080015;
+        public static final int menu_stop=0x7f080016;
         public static final int observ_time=0x7f08000a;
         public static final int observation_list=0x7f08000d;
         public static final int observed_addr=0x7f080009;
+        public static final int popup_header=0x7f08000f;
+        public static final int popup_headerLayout=0x7f08000e;
+        public static final int popup_header_columt_1=0x7f080010;
+        public static final int popup_header_columt_2=0x7f080011;
     }
     public static final class layout {
         public static final int actionbar_indeterminate_progress=0x7f030000;
@@ -61,6 +66,7 @@ public final class R {
         public static final int item_oberver=0x7f030004;
         public static final int listitem_device=0x7f030005;
         public static final int observer_view=0x7f030006;
+        public static final int popup_layout=0x7f030007;
     }
     public static final class menu {
         public static final int gatt_services=0x7f070000;

@@ -16,6 +16,8 @@
 
 package edu.stanford.cs.sing.helena;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.Activity;
@@ -27,21 +29,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import edu.stanford.cs.sing.common.helper.ByteWork;
 import edu.stanford.cs.sing.helena.ble.BluetoothLeService;
 import edu.stanford.cs.sing.helena.ble.HelenaGattAttributes;
 import edu.stanford.cs.sing.helena.nodes.FireAdapter;
 import edu.stanford.cs.sing.helena.nodes.FireArray;
+import edu.stanford.cs.sing.helena.nodes.Firestorm;
 import edu.stanford.cs.sing.helena.nodes.ObservAdapter;
 
 
@@ -69,8 +82,8 @@ public class DeviceControlActivity extends Activity {
 	private boolean mConnected = false;
 	private BluetoothGattCharacteristic mNotifyCharacteristic;
 	private BluetoothGattService mHelenaService;
-
-
+	private OnItemClickListener mFireListOnClickListner;
+	private PopupWindow  popWindow;
 	public FireArray mFirestormArray;
 	private FireAdapter mFireAdapter;
 	private ObservAdapter mObserverAdapter;
@@ -127,9 +140,7 @@ public class DeviceControlActivity extends Activity {
 		}
 	};
 
-	private OnItemClickListener mFireListOnClickListner;
-
-
+	
 
 	private void dealWithData(byte[] data){
 		byte[] device = ByteWork.getBytes(data, 0, 5);
@@ -142,10 +153,6 @@ public class DeviceControlActivity extends Activity {
 		Log.d(TAG, "Deal with data ");
 	}
 
-
-	private void clearUI() {
-		
-	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -169,10 +176,12 @@ public class DeviceControlActivity extends Activity {
         mConnectionState = (TextView) findViewById(R.id.connection_state);
         // Create the adapter to convert the array to views
         mFireAdapter = new FireAdapter(this, mFirestormArray);
-		addFireList();
-
+        
+        addFireList();
+		
 		Log.d(TAG, "onCreate bindService");
 	}
+
 
 	public void onBackPressed(){
 		Log.d(TAG,"OnBackPress");
@@ -183,16 +192,50 @@ public class DeviceControlActivity extends Activity {
 		}
 	}
 	
+    public void onShowPopup(View v){
+    	 
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+ 
+        // inflate the custom popup layout
+        final View inflatedView = layoutInflater.inflate(R.layout.popup_layout, null,false);
+        // find the ListView in the popup layout
+        ListView listView = (ListView)inflatedView.findViewById(R.id.fire_list);
+ 
+        // get device size
+        Display display = getWindowManager().getDefaultDisplay();
+        final Point size = new Point();
+        display.getSize(size);
+
+        // set height depends on the device size
+        popWindow = new PopupWindow(inflatedView, size.x - 50,size.y - 400, true );
+        // set a background drawable with rounders corners
+        popWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.dialog_background));
+        // make it focusable to show the keyboard to enter in `EditText`
+        popWindow.setFocusable(true);
+        // make it outside touchable to dismiss the popup window
+        popWindow.setOutsideTouchable(true);
+ 
+        // show the popup at bottom of the screen and set some margin at bottom ie,
+       // popWindow.showAtLocation(getCurrentFocus(), Gravity.TOP, 0, 100); //showAtLocation(v, Gravity.BOTTOM, 0,100);
+        findViewById(R.id.fire_list).post(new Runnable() {
+        	   public void run() {
+        		   popWindow.showAtLocation(findViewById(R.id.fire_list), Gravity.CENTER, 0, 0);
+        	   }
+        	});
+    }
+    
 	private void addDetailList(AdapterView<?> parent, View view, int position, long id){
 		mFireLitDisplay = false;
-		((TextView) findViewById(R.id.header_columt_1)).setText(R.string.addr);
-		((TextView) findViewById(R.id.header_columt_2)).setText(R.string.label_last_seen);
-		((TextView) findViewById(R.id.header_columt_3)).setText(R.string.empty);
-    	mObserverAdapter = new ObservAdapter(
-    			view.getContext(), mFirestormArray.get(position).getObservationList());
-    	ListView listView = (ListView) findViewById(R.id.fire_list);
-        listView.setAdapter(mObserverAdapter);
+		Firestorm mFire = mFirestormArray.get(position); 
+		((TextView) findViewById(R.id.popup_header)).setText("Observer: " + mFire.id);
+		((TextView) findViewById(R.id.popup_header_columt_1)).setText(R.string.addr);
+		((TextView) findViewById(R.id.popup_header_columt_2)).setText(R.string.label_last_seen);
 
+    	mObserverAdapter = new ObservAdapter(
+    			view.getContext(), mFire.getObservationList());
+    	ListView listView = (ListView) findViewById(R.layout.popup_layout);
+        listView.setAdapter(mObserverAdapter);
+    	onShowPopup(view);
 	}
 	
 	class FireListOnClickListner implements OnItemClickListener{
@@ -202,9 +245,6 @@ public class DeviceControlActivity extends Activity {
 				long id) {
 			addDetailList( parent,  view,  position, id);
         	Log.d(TAG, "onClick " + position);
-
-
-			
 		}
 		
 	}
@@ -219,6 +259,7 @@ public class DeviceControlActivity extends Activity {
 	        ListView listView = (ListView) findViewById(R.id.fire_list);
 	        listView.setAdapter(mFireAdapter);
 	        listView.setOnItemClickListener(mFireListOnClickListner);
+	        onShowPopup(listView);
 			}
 	}
 

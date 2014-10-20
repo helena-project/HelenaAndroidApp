@@ -49,7 +49,7 @@ public class Firestorm {
 	}
 	
 	public String toString(){
-		return this.id;
+		return ""+this.id;
 	}
 	
 	public ObservationArray getObservationList(){

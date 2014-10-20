@@ -28,6 +28,7 @@
     <string name="label_last_seen">Last Seen</string>
     
     <string name="observed_device">Observed device</string>
+     <string name="label_observer">Observer: </string>
     
     <string name="observation_time">Observation time</string>
     <string name="empty"></string>

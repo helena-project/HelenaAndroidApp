@@ -175,7 +175,7 @@ public class DeviceControlActivity extends Activity {
         //mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
         // Create the adapter to convert the array to views
-        mFireAdapter = new FireAdapter(this, mFirestormArray);
+        mFireAdapter = new FireAdapter(DeviceControlActivity.this, mFirestormArray);
         
         addFireList();
 		
@@ -192,20 +192,25 @@ public class DeviceControlActivity extends Activity {
 		}
 	}
 	
-    public void onShowPopup(View v){
+    public void onShowPopup(View view, final int position){
     	 
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
  
         // inflate the custom popup layout
-        final View inflatedView = layoutInflater.inflate(R.layout.popup_layout, null,false);
+        final View inflatedView = layoutInflater.inflate(R.layout.observer_view, null,false);
+        
         // find the ListView in the popup layout
-        ListView listView = (ListView)inflatedView.findViewById(R.id.fire_list);
- 
+		mFireLitDisplay = false;
+		Firestorm mFire = mFirestormArray.get(position); 
+		
+		Log.d(TAG, "FIRE ID " + mFire.id);
+		
+		
         // get device size
         Display display = getWindowManager().getDefaultDisplay();
         final Point size = new Point();
         display.getSize(size);
-
+        
         // set height depends on the device size
         popWindow = new PopupWindow(inflatedView, size.x - 50,size.y - 400, true );
         // set a background drawable with rounders corners
@@ -220,22 +225,26 @@ public class DeviceControlActivity extends Activity {
         findViewById(R.id.fire_list).post(new Runnable() {
         	   public void run() {
         		   popWindow.showAtLocation(findViewById(R.id.fire_list), Gravity.CENTER, 0, 0);
+        		   addDetailList(inflatedView, position);
         	   }
         	});
     }
     
-	private void addDetailList(AdapterView<?> parent, View view, int position, long id){
+	private void addDetailList(View inflatedView, int position){
 		mFireLitDisplay = false;
 		Firestorm mFire = mFirestormArray.get(position); 
-		((TextView) findViewById(R.id.popup_header)).setText("Observer: " + mFire.id);
-		((TextView) findViewById(R.id.popup_header_columt_1)).setText(R.string.addr);
-		((TextView) findViewById(R.id.popup_header_columt_2)).setText(R.string.label_last_seen);
-
+		ListView listView = (ListView) inflatedView.findViewById(R.id.list_observed);
+		Log.d(TAG, "FIRE ID " + mFire.id);
+        ((TextView) inflatedView.findViewById(R.id.popup_header)).setText("" + mFire.toString());
+		((TextView) inflatedView.findViewById(R.id.popup_header_columt_1)).setText("MAC");
+		((TextView) inflatedView.findViewById(R.id.popup_header_columt_2)).setText("Time");
     	mObserverAdapter = new ObservAdapter(
-    			view.getContext(), mFire.getObservationList());
-    	ListView listView = (ListView) findViewById(R.layout.popup_layout);
+    			DeviceControlActivity.this, mFire.getObservationList());
+    	
         listView.setAdapter(mObserverAdapter);
-    	onShowPopup(view);
+
+
+    	
 	}
 	
 	class FireListOnClickListner implements OnItemClickListener{
@@ -243,7 +252,7 @@ public class DeviceControlActivity extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			addDetailList( parent,  view,  position, id);
+			onShowPopup( view,  position);
         	Log.d(TAG, "onClick " + position);
 		}
 		
@@ -259,7 +268,7 @@ public class DeviceControlActivity extends Activity {
 	        ListView listView = (ListView) findViewById(R.id.fire_list);
 	        listView.setAdapter(mFireAdapter);
 	        listView.setOnItemClickListener(mFireListOnClickListner);
-	        onShowPopup(listView);
+	       
 			}
 	}
 

@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.ClipData.Item;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -46,6 +47,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -74,7 +76,7 @@ public class DeviceControlActivity extends Activity {
 	public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
 	public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
-	private TextView mConnectionState;
+	private ImageView mConnectionState;
 
 	private String mDeviceName;
 	private String mDeviceAddress;
@@ -121,12 +123,12 @@ public class DeviceControlActivity extends Activity {
 			final String action = intent.getAction();
 			if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
 				mConnected = true;
-				updateConnectionState(R.string.connected);
+				//updateConnectionState(R.drawable.connected);
 				invalidateOptionsMenu();
 
 			} else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
 				mConnected = false;
-				updateConnectionState(R.string.disconnected);
+				//updateConnectionState(R.drawable.disconnected);
 				invalidateOptionsMenu();
 				//clearUI();
 			} else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
@@ -173,7 +175,7 @@ public class DeviceControlActivity extends Activity {
 		((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
 
         //mGattServicesList.setOnChildClickListener(servicesListClickListner);
-        mConnectionState = (TextView) findViewById(R.id.connection_state);
+       // mConnectionState = (ImageView) findViewById(R.id.connection_state);
         // Create the adapter to convert the array to views
         mFireAdapter = new FireAdapter(DeviceControlActivity.this, mFirestormArray);
         
@@ -212,7 +214,7 @@ public class DeviceControlActivity extends Activity {
         display.getSize(size);
         
         // set height depends on the device size
-        popWindow = new PopupWindow(inflatedView, size.x - 50,size.y - 400, true );
+        popWindow = new PopupWindow(inflatedView, size.x - 50,size.y - 200, true );
         // set a background drawable with rounders corners
         popWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.dialog_background));
         // make it focusable to show the keyboard to enter in `EditText`
@@ -303,8 +305,9 @@ public class DeviceControlActivity extends Activity {
 			menu.findItem(R.id.menu_connect).setVisible(false);
 			menu.findItem(R.id.menu_disconnect).setVisible(true);
 		} else {
-			menu.findItem(R.id.menu_connect).setVisible(true);
 			menu.findItem(R.id.menu_disconnect).setVisible(false);
+			menu.findItem(R.id.menu_connect).setVisible(true);
+
 		}
 		return true;
 	}
@@ -333,7 +336,7 @@ public class DeviceControlActivity extends Activity {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				mConnectionState.setText(resourceId);
+				mConnectionState.setImageResource(resourceId);
 			}
 		});
 	}

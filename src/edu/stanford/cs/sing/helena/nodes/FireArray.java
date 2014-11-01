@@ -27,12 +27,11 @@ public class FireArray implements Serializable{
 	
 
 
-	public void addDeviceData(String key, byte[] data){
-		
-		
+	public void addDeviceData(String key, byte data){
+
 		if(mFireMap.containsKey(key)){
 			mFireMap.get(key).addObservation(data);
-
+			
 		} else {
 			Firestorm fire = new Firestorm(key);
 			fire.addObservation(data);

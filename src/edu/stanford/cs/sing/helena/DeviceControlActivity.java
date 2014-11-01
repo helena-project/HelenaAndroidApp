@@ -143,16 +143,18 @@ public class DeviceControlActivity extends Activity {
 	};
 
 	
-
 	private void dealWithData(byte[] data){
-		byte[] device = ByteWork.getBytes(data, 0, 5);
-		byte[] observed = ByteWork.getBytes(data, 6, 15);
+		Log.d("DealWithData", String.valueOf(data.length));
+		byte[] device = ByteWork.getBytes(data, 0, 1);
+		byte observed = data[2];
+
+		
+		
 		StringBuilder str = new StringBuilder(device.length);
 		for(byte byteChar : device)
 			str.append(String.format("%02X ", byteChar));
-		
 		mFirestormArray.addDeviceData(str.toString(),observed);
-		Log.d(TAG, "Deal with data ");
+		
 	}
 
 
@@ -240,6 +242,7 @@ public class DeviceControlActivity extends Activity {
         ((TextView) inflatedView.findViewById(R.id.popup_header)).setText("" + mFire.toString());
 		((TextView) inflatedView.findViewById(R.id.popup_header_columt_1)).setText("MAC");
 		((TextView) inflatedView.findViewById(R.id.popup_header_columt_2)).setText("Time");
+		//((TextView) inflatedView.findViewById(R.id.popup_header_columt_3)).setText("Manufacturer");
     	mObserverAdapter = new ObservAdapter(
     			DeviceControlActivity.this, mFire.getObservationList());
     	
@@ -378,7 +381,7 @@ public class DeviceControlActivity extends Activity {
 								//Initiate notifications
 								mNotifyCharacteristic = gattCharacteristic;
 								mBluetoothLeService.setCharacteristicNotification(
-										gattCharacteristic, true);
+										mNotifyCharacteristic, true);
 							}
 							
 						}

@@ -13,17 +13,15 @@ public class Firestorm {
 	public ArrayMap<Timestamp, Observation> mObservedDevices; 
 	public String id;
 	public String lastUpdated;
-	public ObservationArray mObservationArray;
+	private ObservationArray mObservationArray;
 	
 	public Firestorm (String id){
 		this.mObservedDevices = new ArrayMap<Timestamp, Observation>();
-		mObservationArray = new ObservationArray();
+		this.mObservationArray = new ObservationArray();
 		this.id = id;
 		this.lastUpdated = getTimeNow();	
 		}
-	public Firestorm () {
-		this("default");
-	}
+
 	
 	private String getTimeNow(){
 		Time today = new Time(Time.getCurrentTimezone());
@@ -31,14 +29,12 @@ public class Firestorm {
 		return today.format("%k:%M:%S");
 	}
 	
-	public void addObservation(Observation observed) {
+
+	public void addObservation(byte obs){
+		Observation observed = new Observation(obs);
 		mObservedDevices.put(new Timestamp(System.currentTimeMillis()), observed);
 		mObservationArray.add(observed);
 		this.lastUpdated = getTimeNow();	
-	}
-	public void addObservation(byte[] observed){
-		addObservation(new Observation(observed));
-		
 	}
 	public void removeObservation(Observation observation){
 		mObservedDevices.remove(observation);
@@ -49,7 +45,7 @@ public class Firestorm {
 	}
 	
 	public String toString(){
-		return ""+this.id;
+		return this.id;
 	}
 	
 	public ObservationArray getObservationList(){

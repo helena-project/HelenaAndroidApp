@@ -28,7 +28,7 @@ import edu.stanford.cs.sing.helena.BusProvider;
  *
  */
 public class BluetoothLeService extends Service {
-	private final static String TAG = BluetoothLeService.class.getSimpleName();
+	private final static String TAG = "BluetoothLeService";
 
 	private BluetoothManager mBluetoothManager;
 	private BluetoothAdapter mBluetoothAdapter;
@@ -293,12 +293,14 @@ public class BluetoothLeService extends Service {
 			return;
 		}
 		mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
-		Log.d(TAG, "setCharacteristicNotification");
+		
 		if(UUID_LISTED_DEVICE.equals(characteristic.getUuid())){
+			Log.d(TAG, "setCharacteristicNotification");
 			BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(HelenaGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
+            boolean writeDesc = mBluetoothGatt.writeDescriptor(descriptor);
+            Log.d(TAG, "Write writeDescriptor was: "+ String.valueOf(writeDesc));
 		}
 
      

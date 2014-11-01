@@ -14,6 +14,7 @@ public class ObservAdapter extends ArrayAdapter<Observation> {
     private static class ViewHolder {
         TextView address;
         TextView lastUpdated;
+        TextView manufacturer;
     }
     
     private ObservationArray mObservation;
@@ -37,8 +38,9 @@ public class ObservAdapter extends ArrayAdapter<Observation> {
           LayoutInflater inflater = LayoutInflater.from(getContext());
           convertView = inflater.inflate(R.layout.item_oberver, parent, false);
           viewHolder.address= (TextView) convertView.findViewById(R.id.observed_addr);
-         // viewHolder.number = (TextView) convertView.findViewById(R.id.fire_number);
+         // 
           viewHolder.lastUpdated = (TextView) convertView.findViewById(R.id.observ_time);
+          //viewHolder.manufacturer = (TextView) convertView.findViewById(R.id.manufacturer);
           convertView.setTag(viewHolder);
        } else {
            viewHolder = (ViewHolder) convertView.getTag();
@@ -47,7 +49,9 @@ public class ObservAdapter extends ArrayAdapter<Observation> {
        viewHolder.address.setText(""+mobservation.observed);
        //viewHolder.number.setText(""+mFire.numberOfObservation());
        viewHolder.lastUpdated.setText("" + mobservation.mSeenTime);
+       //viewHolder.manufacturer.setText("" + mobservation.mManufaturer);
        // Return the completed view to render on screen
+       
        return convertView;
    }
     
